@@ -22,15 +22,14 @@ class Product {
     name = doc['name'];
     url = doc['url'];
     desc = doc['desc'];
-    price = doc['price'];
+    price = double.parse(doc['price'].toString());
     qty = doc['qty'];
   }
-  Product.fromMap(dynamic doc) {
-    // id = doc.id;
+  Product.fromMap(dynamic doc,this.id) {
     name = doc['name'];
     url = doc['url'];
     desc = doc['desc'];
-    price = doc['price'];
+    price = double.parse(doc['price'].toString());
     qty = doc['qty'];
   }
   @override
