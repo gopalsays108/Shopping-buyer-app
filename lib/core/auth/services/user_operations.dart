@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import '/config/constants/AppConstants.dart';
 import '/utils/models/message.dart';
@@ -12,9 +13,12 @@ class UserOperations {
 
   //step 1 - create an instance of firebase auth service
   final FirebaseAuth _auth = FirebaseAuth.instance;
+
+  final FirebaseFirestore db = FirebaseFirestore.instance;
   //register
   Future<Message> add(UserClass.User user) async {
     try {
+      db.collection(Collections.USERS).add({"email": user.userid});//to count number of users registered to our application
       UserCredential userCred = await _auth.createUserWithEmailAndPassword(
           email: user.userid, password: user.password);
       Message message = Message.takeMessage(

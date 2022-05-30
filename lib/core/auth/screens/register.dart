@@ -22,23 +22,19 @@ class _RegisterState extends State<Register> {
     String message = '';
     String userid = useridCtrl.text;
     String password = passwordCtrl.text;
-    String appId = appidCtrl.text;
-    if (appId != Constants.appId) {
-      message = 'Wrong App Id';
-      createToast(message, context);
+    User userObject = User.takeInput(userid: userid, password: password);
+    UserOperations opr = UserOperations.getInstance();
+    Message messageObject = await opr.add(userObject);
+    createToast(scaffoldkey, messageObject.message);
+    if (messageObject.code == Constants.SUCCESS) {
+      Future.delayed(Duration(milliseconds: 1000), () {
+        _moveToLogin();
+      });
     } else {
-      User userObject = User.takeInput(userid: userid, password: password);
-      UserOperations opr = UserOperations.getInstance();
-      Message messageObject = await opr.add(userObject);
-      createToast(messageObject.message, context);
-      if (messageObject.code == Constants.SUCCESS) {
-        Future.delayed(Duration(milliseconds: 1000), () {
-          _moveToLogin();
-        });
-      }
-      passwordCtrl.clear();
-      appidCtrl.clear();
+      createToast(scaffoldkey, messageObject.message);
     }
+    passwordCtrl.clear();
+    appidCtrl.clear();
   }
 
   late TextEditingController useridCtrl;
@@ -51,13 +47,14 @@ class _RegisterState extends State<Register> {
     super.initState();
     useridCtrl = TextEditingController();
     passwordCtrl = TextEditingController();
-    appidCtrl = TextEditingController();
   }
 
+  final GlobalKey<ScaffoldState> scaffoldkey = GlobalKey<ScaffoldState>();
   @override
   Widget build(BuildContext context) {
     Size deviceSize = MediaQuery.of(context).size;
     return Scaffold(
+      key: scaffoldkey,
       appBar: AppBar(
         title: Text('Register'),
       ),
@@ -74,9 +71,15 @@ class _RegisterState extends State<Register> {
                     Constants.REGISTRATION_IMAGE,
                     height: 250,
                   ),
-                  CustomText(label: 'Type UserId here',tc: useridCtrl,prefixIcon: Icons.app_registration),
-                  CustomText(label: 'Type Password here',tc: passwordCtrl,prefixIcon: Icons.password,isObscureText: true),
-                  CustomText(label: 'Type AppId here',tc: appidCtrl,prefixIcon: Icons.password,isObscureText: true),
+                  CustomText(
+                      label: 'Type UserId here',
+                      tc: useridCtrl,
+                      prefixIcon: Icons.app_registration),
+                  CustomText(
+                      label: 'Type Password here',
+                      tc: passwordCtrl,
+                      prefixIcon: Icons.password,
+                      isObscureText: true),
                   Container(
                       width: 200,
                       margin: EdgeInsets.all(3),

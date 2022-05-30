@@ -8,11 +8,12 @@ abstract class Constants {
 }
 
 abstract class RouteConstants {
-  static String LOGIN = '/login';
+  static String LOGIN = '/';
   static String REGISTER = '/register';
-  static String DASHBOARD = '/';
+  static String DASHBOARD = '/dashboard';
 }
 
 class Collections {
   static String PRODUCTS = 'products';
+  static String USERS = 'users';
 }

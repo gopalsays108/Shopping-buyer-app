@@ -27,17 +27,15 @@ class _LoginState extends State<Login> {
     User userObject = User.takeInput(userid: userid, password: password);
     UserOperations opr = UserOperations.getInstance();
     Message messageObject = await opr.read(userObject);
-    createToast(messageObject.message, context);
+    createToast(scaffoldkey, messageObject.message);
     if (messageObject.code == Constants.SUCCESS) {
-      Future.delayed(Duration(milliseconds:1000), () {
-              Navigator.pushReplacementNamed(context, RouteConstants.DASHBOARD,
-          arguments: {'userid': useridCtrl.text});
-          // arguments: useridCtrl.text); //we can also send any other data type
-
+      Future.delayed(Duration(milliseconds: 1000), () {
+        Navigator.pushReplacementNamed(context, RouteConstants.DASHBOARD,
+            arguments: {'userid': useridCtrl.text});
+        // arguments: useridCtrl.text); //we can also send any other data type
       });
-
     } else {
-      createToast(messageObject.message, context);
+      createToast(scaffoldkey, messageObject.message);
     }
     passwordCtrl.clear();
   }
@@ -50,10 +48,12 @@ class _LoginState extends State<Login> {
     passwordCtrl = TextEditingController();
   }
 
+  final GlobalKey<ScaffoldState> scaffoldkey = GlobalKey<ScaffoldState>();
   @override
   Widget build(BuildContext context) {
     Size deviceSize = MediaQuery.of(context).size;
     return Scaffold(
+      key: scaffoldkey,
       appBar: AppBar(
         title: Text('Login'),
       ),
@@ -68,8 +68,15 @@ class _LoginState extends State<Login> {
               Column(
                 children: [
                   Image.network(Constants.LOGIN_IMAGE),
-                  CustomText(label: 'Type UserId here',tc: useridCtrl,prefixIcon: Icons.login),
-                  CustomText(label: 'Type Password here',tc: passwordCtrl,prefixIcon: Icons.password,isObscureText: true),
+                  CustomText(
+                      label: 'Type UserId here',
+                      tc: useridCtrl,
+                      prefixIcon: Icons.login),
+                  CustomText(
+                      label: 'Type Password here',
+                      tc: passwordCtrl,
+                      prefixIcon: Icons.password,
+                      isObscureText: true),
                   Container(
                       width: 200,
                       margin: EdgeInsets.all(5),
