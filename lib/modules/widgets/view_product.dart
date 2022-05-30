@@ -33,7 +33,7 @@ class ViewProduct extends StatelessWidget {
                   // scrollDirection: Axis.horizontal,
                   itemBuilder: (BuildContext ctx, int index) {
                     var doc = snapshot.data!.docs[index].data();
-                    product = Product.fromMap(doc);
+                    product = Product.fromMap(doc,snapshot.data!.docs[index].id);
                     return ListTile(
                         leading: Container(
                             width: deviceSize.width / 5.2,

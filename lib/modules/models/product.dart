@@ -9,36 +9,40 @@ class Product {
   late double price;
   late double qty;
   late String url;
+
   Product() {}
+
   Product.takeProduct(
-      {this.id = "",
+      {required this.id,
       required this.name,
       required this.desc,
       required this.price,
       required this.qty,
       required this.url});
+
   Product.fromJSON(QueryDocumentSnapshot doc) {
     id = doc.id;
     name = doc['name'];
     url = doc['url'];
     desc = doc['desc'];
-    price = doc['price'];
+    price = double.parse(doc['price'].toString());
     qty = doc['qty'];
   }
-  Product.fromMap(dynamic doc) {
-    // id = doc.id;
+
+  Product.fromMap(dynamic doc, this.id) {
     name = doc['name'];
     url = doc['url'];
     desc = doc['desc'];
-    price = doc['price'];
+    price = double.parse(doc['price'].toString());
     qty = doc['qty'];
   }
+
   @override
   String toString() {
     return "Product id is $id Product name is $name , Product Description is $desc , Product Price is $price , Product Quantity is $qty";
   }
 
   Map<String, dynamic> toJSON() {
-    return {'name': name, "desc": desc, "price": price, "qty": qty, "url": url};
+    return {'product_id':id,  'name': name, "desc": desc, "price": price, "qty": qty, "url": url};
   }
 }
