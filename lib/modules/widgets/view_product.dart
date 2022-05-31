@@ -1,11 +1,13 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:shopping_buyer_app/modules/models/cartItem.dart';
 import '/modules/repository/product_repo.dart';
 
 import '../models/product.dart';
 
 class ViewProduct extends StatelessWidget {
   ProductRepository repo = ProductRepository();
+  FirebaseFirestore firestore = FirebaseFirestore.instance;
   late Product product;
 
   @override
@@ -53,14 +55,22 @@ class ViewProduct extends StatelessWidget {
                           children: [
                             IconButton(
                                 onPressed: () {
-                                  //update the product
-                                }, icon: Icon(Icons.edit)),
+                                  product = Product.fromMap(
+                                          doc, snapshot.data!.docs[index].id);
+                                      addProductToCart(
+                                          snapshot.data!.docs[index].id,
+                                          product.price,
+                                          product.url,
+                                          product.name,
+                                          "123asdwqdasdasd");
+                                  
+                                }, icon: Icon(Icons.add_circle_outline_sharp)),
                             IconButton(
                                 onPressed: () {
                                   //delete the product
                                 },
                                 icon: Icon(
-                                  Icons.delete,
+                                  Icons.money,
                                   color: Colors.red,
                                 ))
                           ],
@@ -71,6 +81,53 @@ class ViewProduct extends StatelessWidget {
               }
             })));
   }
+  void addProductToCart(
+      String id, double price, String url, String name, String s) {
+    getPreviousCount(id, price, url, name, s);
+  }
+
+
+  void getPreviousCount(
+      String id, double price, String url, String name, String s) async {
+    try {
+      DocumentReference querySnapshot =
+          await firestore.collection("cart").doc(s)
+      .collection('orderlist')
+      .doc(id);
+
+      querySnapshot.get().then((DocumentSnapshot doc) {
+        if (doc.exists) {
+          int valueToUpdate = int.parse(doc.get('quantity').toString()) + 1;
+          lol(id, valueToUpdate, price, url, name, s);
+        } else {
+          lol(id, 1, price, url, name, s);
+        }
+      });
+    } catch (e) {
+      // lol(id, 1, s);
+    }
+  }
+
+  void lol(String id, int valueToTupdate, double price, String url, String name,
+      String s) {
+    try {
+      Future<void> red = firestore.collection('cart').doc(s).set({"userid": s});
+      // print("eskhejwghgesfggesijsebfhjfaeyfewdhjbewFJKBfewigfkjfejk");
+      // print(price);
+      print(CartItem(id, valueToTupdate, price, url, name).toJSON());
+      Future<void> red2 = firestore
+          .collection('cart')
+          .doc(s)
+          .collection('orderlist')
+          .doc(id)
+          .set(CartItem(id, valueToTupdate, price, url, name)
+              .toJSON());
+      print(red);
+    } catch (e) {
+      print(e);
+    }
+  }
+}
 
   // Widget build(BuildContext context) {
   //   Size deviceSize = MediaQuery.of(context).size;
@@ -129,4 +186,4 @@ class ViewProduct extends StatelessWidget {
   //     ),
   //   );
   // }
-}
+

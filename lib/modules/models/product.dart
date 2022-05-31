@@ -1,5 +1,3 @@
-import 'dart:math';
-
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 class Product {
@@ -17,7 +15,7 @@ class Product {
       required this.price,
       required this.qty,
       required this.url});
-  Product.fromJSON(QueryDocumentSnapshot doc) {
+  Product.fromJSON(QueryDocumentSnapshot doc) { //for future builder
     id = doc.id;
     name = doc['name'];
     url = doc['url'];
@@ -25,7 +23,7 @@ class Product {
     price = double.parse(doc['price'].toString());
     qty = doc['qty'];
   }
-  Product.fromMap(dynamic doc,this.id) {
+  Product.fromMap(dynamic doc,this.id) {  //for stream builder
     name = doc['name'];
     url = doc['url'];
     desc = doc['desc'];

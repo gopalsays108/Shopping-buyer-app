@@ -1,30 +1,25 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-import 'package:shopping_buyer_app/modules/screens/cartScreen.dart';
-import 'package:shopping_buyer_app/modules/widgets/view_product.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import '/modules/repository/product_repo.dart';
 
-import '../../config/constants/AppConstants.dart';
-import '../Services/drawer_options_list.dart';
-import '../models/drawer_option.dart';
 import '../models/product.dart';
-import '../repository/product_repo.dart';
-import '../widgets/drawer.dart';
 
-class Dashboard extends StatefulWidget {
-  const Dashboard({Key? key}) : super(key: key);
+class searchProduct extends StatefulWidget {
+  const searchProduct({Key? key}) : super(key: key);
 
   @override
-  State<Dashboard> createState() => _DashboardState();
+  State<searchProduct> createState() => _searchProduct();
 }
 
-class _DashboardState extends State<Dashboard> {
-  DrawerOptionList list = DrawerOptionList();
+class _searchProduct extends State<searchProduct> {
   ProductRepository repo = ProductRepository();
   late Product product;
   TextEditingController editingController = TextEditingController();
+
   List<Product> ls = [];
   List<Product> finalproduct = [];
 
+  @override
   void initState() {
     finalproduct.addAll(ls);
     super.initState();
@@ -47,13 +42,13 @@ class _DashboardState extends State<Dashboard> {
       });
       setState(() {
         finalproduct.clear();
-        finalproduct = dummyListData;
+        finalproduct = (dummyListData);
       });
       return;
     } else {
       setState(() {
         finalproduct.clear();
-        finalproduct = ls;
+        finalproduct = (ls);
       });
     }
   }
@@ -61,34 +56,13 @@ class _DashboardState extends State<Dashboard> {
   @override
   Widget build(BuildContext context) {
     Size deviceSize = MediaQuery.of(context).size;
-    List<DrawerOption> drawer_options_list = list.drawer_options;
-    drawer_options_list = drawer_options_list.map((drawerOption) {
-      if (drawerOption.name == AppBarTitle.HOME) {
-        drawerOption.isActive = true;
-        return drawerOption;
-      } else {
-        return drawerOption;
-      }
-    }).toList();
-    Map arguments = ModalRoute.of(context)!.settings.arguments as Map;
-    String userid = arguments['userid'];
     return Scaffold(
       appBar: AppBar(
-        title: Text(AppBarTitle.HOME),
-        actions: [
-          IconButton(
-              onPressed: () {
-                // Navigator.pushNamed(context, RouteConstants.MY_CART);
-                Navigator.of(context)
-                    .push(MaterialPageRoute(builder: (ctx) => CartScreen2()));
-              },
-              icon: Icon(Icons.shopping_bag))
-        ],
+        title: const Text('search your product !!'),
       ),
-      drawer: Drawer(child: myDrawer(userid, drawer_options_list)),
       body: SafeArea(
           child: Container(
-        padding: EdgeInsets.only(top: 10),
+        padding: EdgeInsets.all(10.0),
         child: ListView(
           children: [
             Container(
@@ -108,6 +82,7 @@ class _DashboardState extends State<Dashboard> {
                 ),
               ),
             ),
+
             Container(
                 height: deviceSize.height - 60,
                 child: StreamBuilder(
@@ -127,32 +102,24 @@ class _DashboardState extends State<Dashboard> {
                           child: Text('Some error in retrieving products'),
                         );
                       } else {
-                        ls = snapshot.data!.docs
-                            .map((e) => Product.fromMap(e, e.id))
-                            .toList();
-                        if (editingController.text.isEmpty) {
-                          finalproduct = ls;
-                        }
                         return ListView.builder(
                           // scrollDirection: Axis.horizontal,
                           itemBuilder: (BuildContext ctx, int index) {
-                            // product = Product.fromMap(
-                            //     doc, snapshot.data!.docs[index].id);
-                            // ls.add(product);
-
+                            var doc = snapshot.data!.docs[index].data();
+                            product = Product.fromMap(
+                                doc, snapshot.data!.docs[index].id);
+                            ls.add(product);
                             return ListTile(
                                 leading: Container(
                                     width: deviceSize.width / 5.2,
-                                    child:
-                                        Image.network(finalproduct[index].url)),
-                                title: Text(finalproduct[index].name),
+                                    child: Image.network(product.url)),
+                                title: Text(product.name),
                                 // subtitle: Text(snapshot.data![index].desc),
                                 subtitle: Column(
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
-                                    Text(finalproduct[index].desc),
-                                    Text(
-                                        "Quantity : ${finalproduct[index].qty}")
+                                    Text(product.desc),
+                                    Text("Quantity : ${product.qty}")
                                   ],
                                 ),
                                 trailing: Row(
@@ -175,12 +142,13 @@ class _DashboardState extends State<Dashboard> {
                                   ],
                                 ));
                           },
-                          itemCount: finalproduct.length,
+                          itemCount: snapshot.data!.docs.length,
                         );
                       }
                     }))),
           ],
         ),
+        // child:Text("Your widget")
       )),
     );
   }

@@ -11,9 +11,18 @@ abstract class RouteConstants {
   static String LOGIN = '/';
   static String REGISTER = '/register';
   static String DASHBOARD = '/dashboard';
+  static String MY_ORDERS = '/my_orders';
+  static String MY_CART = '/my_cart';
+}
+
+abstract class AppBarTitle {
+  static String HOME = "Home";
+  static String MY_ORDERS = "My Orders";
+  static String MY_CART = "My Cart";
 }
 
 class Collections {
   static String PRODUCTS = 'products';
   static String USERS = 'users';
+  static String CART = 'cart';
 }
